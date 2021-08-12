@@ -1,0 +1,5 @@
+WEB_CAM = 0
+SOURCE_1 = 0
+SOURCE_2 = 2
+SOURCE_1_API = None
+SOURCE_2_API = None
