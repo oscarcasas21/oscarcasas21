@@ -1,5 +1,5 @@
-// Authors: Oscar Casas & Santiago Quintero
-// Uniqnames: casaso & squin
+// Author: Oscar Casas
+// Uniqname: casaso
 // Date: 11/30/2017
 // Lab Section: 012 & 015
 // Project #: 5
