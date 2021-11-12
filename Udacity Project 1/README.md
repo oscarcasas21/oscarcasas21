@@ -1,6 +1,9 @@
 
 Seattle Airbnb Project
 Business Understanding
+
+Blog Post: https://medium.com/@oscarcasasp/airbnb-listing-research-seattle-316f74c46d71
+
 The datasets given are the following, calendar, listings and reviews. Just visually, the listing price seems to change drastically based on rental size, location and season. After each rental, customers leave reviews of their stay.
 
 Questions
