@@ -1,0 +1,150 @@
+{% extends 'index.html' %}
+{% load static %}
+
+
+{% block title %}
+Home |
+{% endblock title %}
+
+
+{% block css %}
+<style>
+  .owl-carousel .owl-stage {
+    display: flex;
+  }
+
+  .owl-carousel {
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
+  }
+
+  .owl-carousel .owl-item img {
+    width: 100%;
+    height: 100%;
+    margin: 0 !important;
+    margin-right: 0 !important;
+  }
+
+  .owl-item {
+    margin: 0 !important;
+  }
+</style>
+{% endblock css %}
+
+
+{% block main %}
+<section class="d-flex align-items-center"
+         style="background: url({% static 'img/gallery-6.png' %}) no-repeat center center fixed;  background-size: cover; height: 100vh;">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-12 text-dark-primary text-right" data-aos="fade-up">
+        <h1 class="font-size-72">FamUnite</h1>
+        <h5>Uniting Loved Ones Through AI.</h5>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="bg-dark-primary" style="height: 40vh; padding-top: 30px;">
+  <div class="container py-5">
+    <h2 class="text-center text-light">FamUnite at a Glance</h2>
+    <p class="text-center text-light mt-4">
+      FamUnite is bringing cutting-edge technology to solve one of the most heartbreaking issues
+      happening across the globe. By using facial recognition algorithms, families can cross-reference old pictures of
+      their loved ones with refugees and migrants that might be held in camps around the world.
+    </p>
+  </div>
+</section>
+
+<div class="owl-carousel gallery-carousel image-responsive" data-aos="fade-up">
+  <a href="javascript:void(0)" data-gall="gallery-carousel">
+    <img src="{% static 'img/Home.png' %}" alt="" />
+  </a>
+
+  <a href="javascript:void(0)" data-gall="gallery-carousel">
+    <img src="{% static 'img/gallery-1.png' %}" alt="" />
+  </a>
+
+  <a href="javascript:void(0)" data-gall="gallery-carousel">
+    <img src="{% static 'img/gallery-2.png' %}" alt="" />
+  </a>
+
+  <a href="javascript:void(0)" data-gall="gallery-carousel">
+    <img src="{% static 'img/gallery-3.png' %}" alt="" />
+  </a>
+
+  <a href="javascript:void(0)" data-gall="gallery-carousel">
+    <img src="{% static 'img/gallery-4.png' %}" alt="" />
+  </a>
+
+  <a href="javascript:void(0)" data-gall="gallery-carousel">
+    <img src="{% static 'img/gallery-5.png' %}" alt="" />
+  </a>
+</div>
+
+<section class="bg-dark-primary p-0" style="height: 50vh;">
+  <div class="container py-5" style="margin-top: 50px;">
+    <h2 class="text-center text-light">What We Do</h2>
+
+    <p class="text-center text-light mt-4">
+      We work with partners to join families through new strides in Artificial Intelligence. We believe that new
+      technology can make a difference when helping people in need. Specifically, we look to making sure families no
+      longer have to be separated when crossing borders. The current disorganization in these migrant camps and lack of
+      access to communication is not adequate. By creating this algorithm we hope to make the pain of not knowing where
+      a loved one is, a thing of the past.
+    </p>
+  </div>
+</section>
+
+<section class="p-0">
+  <div class="row p-0 m-0" style="background-color: rgb(253, 249, 237);">
+    <div class="col-6 p-0 m-0">
+      <img src="{% static 'img/gallery-5.png' %}" class="w-100">
+    </div>
+
+    <div class="col-6 p-0 m-0">
+      <div class="d-flex flex-column align-items-center justify-content-center mt-5 px-4">
+        <h4 class="text-dark-primary">Facial Recognition Algorithm</h4>
+        <h5 class="mt-4 text-dark-primary">Reinforcing our Commitment</h5>
+        <p class="mt-5 text-dark-primary">Our organization's technology has reached an accuracy level of < 99.9%. The facial recognition
+            system tests backend databases of photographs of individuals at migrant camps and centers.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="p-0">
+  <div class="row p-0 m-0" style="background-color: rgb(253, 249, 237);">
+    <div class="col-6 py-0 m-0">
+      <div class="d-flex flex-column align-items-center justify-content-center mt-5 px-3">
+        <h4 class="text-dark-primary">Purpose</h4>
+        <h5 class="text-dark-primary mt-4">The End Goal</h5>
+        <p class="text-dark-primary mt-5">Once a match is confirmed, FamUnite will help individuals connect with their
+          lost loved ones bycontacting our partners on the ground and will even use raised funds and donations to bring
+          loved ones together.</p>
+      </div>
+    </div>
+
+    <div class="col-6 p-0 m-0">
+      <img src="{% static 'img/gallery-2.png' %}" class="w-100">
+    </div>
+  </div>
+</section>
+
+<section class="d-flex align-items-center p-0"
+         style="background: url({% static 'img/Home.png' %}) no-repeat center center;  background-size: cover; height: 80vh;">
+  <div class="container">
+    <div class="row">
+      <div class="col-12">
+        <h5 class="text-center text-light">“Everything that is done in the world is done by hope”</h5>
+        <h6 class="text-center text-light mt-4">Martin Luther</h6>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock main %}
+
+
+{% block javascript %}
+
+{% endblock javascript %}
