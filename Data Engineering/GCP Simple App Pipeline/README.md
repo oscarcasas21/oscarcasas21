@@ -1,4 +1,4 @@
-# Project 3: Understanding User Behavior
+# GCP Simple APP Pipeline
 
 - We're a data scientist at a game development company  
 
