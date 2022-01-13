@@ -1,0 +1,271 @@
+---
+title: "Simulates vs Real World Data"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r load packages, message = FALSE}
+library(dplyr)
+library(broom)
+library(ggplot2)
+library(patchwork)
+library(sandwich)
+library(lmtest)
+```
+
+# 1. Simulated Data 
+
+For this question, we are going to create data, and then estimate models on this simulated data. This allows us to effectively *know* the population parameters that we are trying to estimate. Consequently, we can reason about how well our models are doing. 
+
+```{r create homoskedastic data function}
+create_homoskedastic_data <- function(n = 100) { 
+  
+  d <- data.frame(id = 1:n) %>% 
+    mutate(
+      x1 = runif(n=n, min=0, max=10), 
+      x2 = rnorm(n=n, mean=10, sd=2), 
+      x3 = rnorm(n=n, mean=0, sd=2), 
+      y  = .5 + 1*x1 + 2*x2 + .25*x3^2 + rnorm(n=n, mean=0, sd=1)
+    )
+  
+  return(d)
+}
+```
+
+```{r create first data}
+d <- create_homoskedastic_data(n=100) 
+```
+
+1. Data Exploration
+
+```{r distriution of outcome data}
+outcome_histogram <- d %>% 
+  ggplot() + # fill in the rest of this chunk to create a plot 
+  aes(x = y) + 
+  geom_histogram(bins = 15, fill = "orangered4", color = "black") + 
+  labs(
+    x = "Outcome Values", 
+    title = "Histogram of Outcomes",
+    subtitle = "It looks like the CLT should work."
+  )
+outcome_histogram
+```
+
+> This distribution looks reasonably well behaved. Because we have more than 30 data points, I think that the CLT should work, and this data will satisfy the assumptions necessary for the large-sample model to produce consistent estimates. 
+
+>The only two OLS assumptions are (i) iid data which is satisfied by problem setup; and (ii) reasonably well-behaved data so that the CLT works. These are both met in this data.
+1. Estimate two models, called `model_1` and `model_2` that have the following form (The only difference is that the second model has squared $x3$): 
+
+\begin{align} 
+Y &= \beta_{0} + \beta_{1}x_{1} + \beta_{2}x_{2} + \beta_{3}x_{3} + \epsilon \\ 
+Y &= \beta_{0} + \beta_{1}x_{1} + \beta_{2}x_{2} + \beta_{3}x_{3}^{2} + \epsilon
+\end{align}
+
+```{r}
+
+model_1 <- lm(y ~ x1 + x2 + x3, data = d)
+model_2 <- lm(y ~ x1 + x2 + I(x3^2), data = d)
+```
+
+
+```{r}
+calculate_msr <- function(model) { 
+  # This function takes a model, and uses the `resid` function 
+  # together with the definition of the mse to produce 
+  # the MEAN of the squared errors.
+  
+  msr <- mean(resid(model)^2)
+  
+  return(msr)
+} 
+calculate_msr(model_1)
+calculate_msr(model_2)
+```
+
+> The second model is doing a better job, the model that has the correctly specified $x_{3}^2$ term is fitting better. It has a lower MSE. 
+
+```{r augment with data from the models}
+d_model_1 <- augment(model_1) 
+d_model_2 <- augment(model_2)
+```
+
+```{r make and plot histograms}
+model_1_residuals_histogram <- d_model_1 %>% 
+  ggplot() + 
+  aes(x = .resid) + 
+  geom_histogram(bins = 20, fill = "chartreuse3", color = "black") + 
+  labs(title = 'Model 1 Residuals')
+model_2_residuals_histogram <- d_model_2 %>% 
+  ggplot() + 
+  aes(x = .fitted - y) + 
+  geom_histogram(bins = 20, fill = "lightblue2", color = "black") + 
+  labs(title = 'Model 2 Residuals')
+outcome_histogram / 
+  model_1_residuals_histogram / 
+  model_2_residuals_histogram
+```
+
+> One thing that I notice right away is that both of the models have much smaller variance in the residuals than in the outcome overall. This is good! It means that the model is working to predict outcomes. The other thing that I notice is that the residuals seem to be centered at zero, while the outcome is not. This is a guarantee that comes from Theorem 4.1.5, and something that I was hoping to see in this data. 
+
+> Finally, I notice that when I compare Model 2 residudals to Model 1 residuals, there seems to be lower variance/dispersion in the Model 2 residuals. We saw this above, when we calcluated the MSE for the two models, but this is anothe way to see this result: Although we have a guarantee that each of these etimates are the BLP given a certain set of data, the model that more closely matches the underlying form of the data will be able to predict with smaller residuals. 
+> 
+> Beause the question asked: 
+> Mean of Y: `r mean(d$y)`
+> Mean of Model 1 residuals: `r mean(d_model_1$.resid)`
+> Mean of Model 2 residuals: `r mean(d_model_2$.fitted - d_model_2$y)`
+
+# 2. Real-World Data 
+
+"Can timely reminders *nudge* people toward increased savings?" Dean Karlan, Margaret McConnell, Sendhil Mullainathan, and Jonathan Zinnman published a paper in 2016 examining just this question. In this research, the authors recruited people living in Peru, Bolivia, and the Philippines to be a part of an experiment. Among those recruited, a randomly selected subset were sent SMS messages while others were not sent these messages. The authors compare savings rates between these two groups using OLS regressions. 
+  
+## A. Read the data 
+
+Read in the data using the following code.
+
+```{r}
+d <- haven::read_dta(file = 'analysis_dataallcountries.dta')
+glimpse(d)
+```
+
+## B. F-test
+
+One of the requirements of a data science experiment is that treatment be randomly assigned to experimental units. One method of assessing whether treatment was randomly assigned is to try and predict the treatment assignment. Here's the intuition: *because treatment was assigned at random, it should not be possible to predict something random with other data.*
+
+The specifics of the testing method utilize an F-test. Here is how: 
+
+- First estimates a model that regresses treatment using only a regression intercept, $Y \sim \beta_{0} + \epsilon_{short}$. In `lm()`, we can estimate this by writing `lm(outcome_variable ~ 1)`, where `outcome_variable` is the outcome that were actually testing. 
+- Then estimates a model that regresses treatment using all data available on hand, $Y \sim \beta_{0} + \beta_{1}x_{1} + \dots + \beta_{k}x_{k} + \epsilon_{long}$. 
+
+To test whether the long model has explained more of the variance in $Y$ than the short model, we conduct an F-test for the long- vs. short-models. 
+
+> The null hypothesis is that there is no difference in the residual sum of squares between the two models. That is, the longmodel with the additional estimates will not perform any better than the short model where these estimates are restricted to be zero. 
+
+> If the p-value for an F-test were to be lower than 0.05, I would reject the null hypothesis. 
+
+c. Using variables that indicate: 
+
+  i. sex (as noted in the codebook); 
+  ii. age; 
+  iii. high school completion; 
+  iv. wealth; 
+  v. marriage status; 
+  vi. previous formal savings (`saved_formal`, which isn't in the codebook); 
+  vii. weekly income;  
+  viii. meeting savings goals (`saved_asmuch`)
+  ix. and, spend before saving 
+
+F-test to evaluate whether there is evidence to call into question whether respondents in the *Philippines* were randomly assigned to receive any reminder (`rem_any`). To do so we filter/subset the data to include only individuals who live in the Philippines, and then estimate a long- and a short- model.  
+
+```{r conduct F-test}
+short_model <- lm(rem_any ~ 1, data = d[d$country == 3,])
+long_model  <- lm(rem_any ~ female + age + highschool_completed + wealthy + 
+                   married + saved_formal + inc_7d + saved_asmuch + 
+                   spent_b4isaved, data = d[d$country == 3,])
+anova(long_model, short_model, test = 'F')
+```
+
+> I fail to reject the null hypothesis because the p-value for this test is larger than the criteria I set set for rejecting. 
+
+> At stake was whether the randomization was conducted correctly. Because I fail to reject the null hypothesis for this F-test, I ultimately conclude that there is no evidence that this randomization was performed incorrectly. Notice, that this doesn't necessarily mean that it **was** conducted correctly, just that there isn't any evidence that it was done improperly. 
+
+## C. Reproduce OLS regression estimates
+
+First, we reproduce the OLS regression estimates
+
+In Section 3.1 of the included paper, the authors describe the OLS model that they estimate: 
+
+$$
+  Y_{i} = \alpha + \beta R_{i} + \gamma Z_{i} + \epsilon_{i}
+$$
+
+For the upper right panel that we are estimating, the outcome, $Y_{i}$ is a binary indicator for whether the individual met their savings goal. 
+
+The indicator $R_{i}$ is a binary indicator for whether the individual was assigned to receive a reminder. And, $Z_{i}$ are additional features: a categorical variable for the country, and a binary indicator for whether the individual was recruited by a marketer. In the model labeled (3) only $Y$, $R$ and $Z$ are used in the regression. In the model labeled (4) these variables are used, but so too are the other variables that we previously used in the F-test. 
+
+> One of the difficulties of this data is that the outcome is a binary indicator for whether the individual met (or did not meet) their commitments. At first blush, this doesn't seem like it meets the requirements of the large-sample model -- after all, a bernoulli RV is *certainly* not normally distributed. But, in the large sample there is actually no requirement that the data be normally distributed. Only, that it is sampled iid and that the CLT might work. > 
+> In section 2 of this paper the authors note that individuals were recruited via door-to-door canvassing in the Phillippines; in Peru individuals were recruited via TV and radio ads; and in Bolivia the product was again marketed on TV and radio ads. 
+> 
+> And so, we have a rather careful statment that we have to make about this data. On the one hand, the people who are influenced by this marketing, and thereby come to the bank, are probabilty not either (a) independent -- they might come with family members or friends, or see the ads at a bar; and (b) nor identically distributed to the rest of the population who do not come to the bank to sign up. 
+> 
+> However, because of the random assignment into treatment conditions we have an iid sample, within a subset of the population. Namely, within the population who come to the bank to sign up for a savings product. 
+b. The authors have concluded that they can conduct these regressions.  
+
+```{r estimate models}
+model_pooled_no_covariates <- lm(
+  reached_b4goal ~ rem_any + highint + rewardint + joint + 
+    dc + joint_single + factor(country),
+  data = d)
+model_pooled_with_covariates <- lm(
+  reached_b4goal ~ rem_any + highint + rewardint + joint + 
+    dc + joint_single + 
+    female + age + highschool_completed + wealthy + married + 
+    saved_formal + inc_7d + saved_asmuch + spent_b4isaved +
+    missing_female + missing_age + missing_highschool_completed + 
+    missing_married +  missing_saved_asmuch + missing_spent_b4isaved + 
+    factor(depart) + factor(provincia) + factor(marketer) + factor(branch) + 
+    factor(country),
+  data = d)
+```
+
+```{r print models, warning = FALSE, results = 'asis'} 
+stargazer::stargazer(
+  model_pooled_with_covariates, model_pooled_no_covariates,
+  omit = c('depart', 'provincia', 'marketer', 'branch', 'country'),
+  omit.labels = c(
+    'Department Fixed Effects', 'Province Fixed Effects', 
+    'Marketer Fixed Effects',   'Branch Fixed Effects', 
+    'Country Fixed Effects'),
+  single.row = TRUE, 
+  type = 'latex')
+```
+
+
+```{r compute MSR for the short and long models; ensure you print these values to the screen}
+calculate_msr(model_pooled_no_covariates)
+calculate_msr(model_pooled_with_covariates)
+```
+
+
+```{r test whether covariates improve the model}
+anova(model_pooled_with_covariates, model_pooled_no_covariates, test = 'F')
+```
+
+> Including these extra "baseline" covariates is useful at improving the model performance. The null hypothesis is that there is not difference in the RSS of the two models; a null hypopthesis that I would reject if the p-value were lower than 0.05 for an F-test. Here, the p-value is lower than 0.05, and so I reject. This means, that the additional covariates are improving the model performance. 
+The authors report that they used Huber-White standard errors. That is to say, they used robust standard errors. Use the function `vcovHC` -- the variance-covariance matrix that is heteroskedastic consistent -- from the `sandwich` package, together with the `coeftest` function from the `lmtest` package to print a table for each of these regressions. 
+
+```{r print regression tables with robust standard errors} 
+coeftest(model_pooled_no_covariates, vcov. = vcovHC(model_pooled_no_covariates, type = 'HC1'))
+coeftest(model_pooled_with_covariates, vcov. = vcovHC(model_pooled_with_covariates, type = 'HC1'))[1:16,]
+```
+
+> For each of the tests, the null hypothesis is that the coefficient = 0. The alternative hypothesis is that the coefficient does **not** equal zero (<.05). 
+
+> **Model 1**: Individuals who receive any reminder, and those who live in Bolivia or the Phillippines (compared to Peru) are statistically significantly different from zero. 
+> **Model 2**: The coefficients that were significant in Model 1 continue to be significant. Also, Females were more likely to meet their commitment, so are older individuals. Wealthy individuals are less likely to meet their commitments, so too are individuals who have previously saved formally. Finally, those who are married are more likely to meet their commitments. 
+| **Variable**           | **Determination** | 
+|------------------------|-------------------|
+| `rem_any`              | Significant       |
+| `marketer`             | Not Significant   | 
+| `Bolivia`              | Significant       |
+| `Peru`                 | Significant       |
+| `female`               | Significant       |
+| `age`                  | Significant       |
+| `highschool_completed` | Not Significant   |
+| `wealth`               | Significant       |
+| `married`              | Significant       |
+| `saved_formal`         | Significant       |
+| `inc_7d`               | Not Significant   |
+| `saved_asmuch`         | Not Significant   |
+| `spent_b4isaved`       | Not Significant   |
+
+
+> Individuals who were randomly assigned to receive a reminder message were 3.2 percentage points more likely to meet their savings goals than those who were not assigned to receive such messages. This effect is statistically significant. Because these reminder messages were experimentally assigned, it is very, very easy to satisfy the "ceteris peribus" nature of the interpretation of this coefficient. 
+> For every year older was a participant, they are 0.0012, or 0.12 percentage points, more likly to meet their commitments. Compared to someone who is 18, someone who is 68 (i.e. 50 years older) is about 6 percentage points more likely to meet their savings goal. However, this requires a really strong assumption that these two individuals are otherwise identical in terms of their covariate profiles. 
+i. Interpret the meaning of the coefficient estimated on `highschool_completed`. 
+
+> The rather crass interpretation is that there is no evidence that completing highschool has any effect on meeting one's savings goals. To state this more precisely, for two individuals with the same covariate profile, the model predicts that someone who has completed highschool will be $0.002$ more likely to meet their savings goal than someone who has not completed highschool.  This result is not statistically significant. 
+

@@ -1,0 +1,103 @@
+---
+title: "Youtube Analysis"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(patchwork) 
+knitr::opts_chunk$set(
+  echo = TRUE, dpi = 300
+  )
+```
+
+#Youtube Dataset Analysis
+
+```{r read data}
+d <- read_delim(
+  file = './videos.txt', 
+  delim = '\t'
+  )
+d <- d %>% 
+  mutate(
+    uploader_f = factor(uploader), 
+    category_f = factor(category), 
+    )
+glimpse(d)
+```
+
+```{r eda}
+d %>% 
+  ggplot() + 
+  aes(rate) + 
+  geom_histogram(
+    fill="coral3", color = "black") 
+```
+
+> What is happening with all of those zero ratings? Well, those are videos that haven't been rated at all. And, it seems that these are videos that aren't really being watched that much. 
+```{r zero ratings)}
+d %>% 
+  filter(rate == 0) %>% 
+  select(rate, ratings, views) %>% 
+  head()
+```
+> At this point, we've got to make a judgement call; should we keep these videos in the analysis, or not? I'm going to drop these videos that have zero ratings, and I'm going to re-save the dataset. 
+```{r}
+d <- d %>% 
+  filter(ratings > 0)
+```
+
+Next, I'd like to look at the distribution of views, which is the outcome variable that we're interested in. My bet is that this is going to have a long tail distribution. 
+
+```{r}
+d %>% 
+  ggplot(aes(x = views)) + 
+  geom_histogram(,
+    fill="blue3", color = "black")
+```
+
+Oh yeah. That's for sure. What does this distribution look like if we log transform it? 
+
+```{r}
+d %>% 
+  ggplot() + 
+  aes(x = views) + 
+  geom_histogram(,
+    fill="green4", color = "black") + 
+  scale_x_continuous(trans = 'log10') + 
+  labs(
+    x = 'Total Views (Log Scale)', 
+    title = 'Total Views, Per Video', 
+    subtitle = 'log-normal!'
+  )
+```
+
+## Regression analysis of YouTube dataset
+
+- views: the number of views by YouTube users.
+- rate: the average rating given by users.
+- length: the duration of the video in seconds.
+
+We want to use the `rate` variable as a proxy for video quality.  we also include `length` as a control variable.  Lastly we estimate the following OLS regression:
+
+$$
+views = 789 + 2103 \cdot rate + 3.00 \cdot length
+$$
+
+One thing that could cause significant omitted variable bias is that the category of the video has an effect on how many views the video receives. As an example, people are very willing to re-watch music videos, but they're much less likely to re-watch comedy videos. 
+```{r}
+d %>% 
+  filter(
+    category %in% c(
+      'Comedy', 'Education', 'Entertainment', 'Music', 'Sports')) %>% 
+  ggplot(aes(x = views)) + 
+  geom_histogram(show.legend = FALSE) + 
+  facet_wrap(~category_f) + 
+  scale_x_continuous(trans = 'log10') + 
+  labs(
+    x = 'Total Views (Log Scale)', 
+    title = 'Total Views, Per Video', 
+    subtitle = 'log-normal!')
+```
+
+

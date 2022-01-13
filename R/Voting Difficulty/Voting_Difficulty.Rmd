@@ -1,0 +1,179 @@
+---
+title: " Republican and Democrats Voting Difficulty"
+author: 'Oscar Casas'
+date: 'Oct 18 2021'
+output: pdf_document
+
+---  
+
+```{r setup, message=FALSE, echo = FALSE}
+library(tidyverse)
+library(haven)
+library(gridExtra)
+```
+
+## Foundational Exercises -- Applied Practice
+
+A paired t-test specifically tests for the mean difference between two metric variables. Because the paired sample in this case is ordinal, calculating the distance/difference between values on a Likert Scale would result in a non-sensical value. Specifically, the interval between two adjacent points on the scale may not be equal to the interval between a different pair of adjacent points on the scale, therefore defining an ordinal rather than metric value. Taking a mean/stdev amongst these categorical differences means we will pass non-sensical values into our computed test statistic. This would render results ultimately uninterpretable.
+
+## Foundational Exercises -- Test Assumptions
+
+
+## Proof Strategy Workshop: Expectation
+
+### 1 sample answer.
+
+two-sample t-test assumptions:
+
+-independent samples
+-metric data
+-population is approximately normal, unless sample size is large such that -CLT applies
+-similar variances
+
+
+##Statistical Analysis¶
+
+
+
+```{r}
+temp <- tempfile()
+
+download.file("https://electionstudies.org/anes_timeseries_2020_stata_20210719/",temp)
+
+data.df <- read_dta(unz(temp, "anes_timeseries_2020_stata_20210719.dta"))
+
+head(data.df)
+```
+### Initial analysis of suitable variables for identifying R vs D, and target variables
+- V201018: PARTY OF REGISTRATION:
+        - 3197 R/D
+        - 1029 Independent/None
+- V201231x Party ID:
+        - 8245 valid results (R/D/Ind)
+        - So this is the variable I think would be good to use – I think I mixed this one up with party registration when we spoke earlier.  This is also a Likert variable (strong D, not strong D, independent D and vice versa with republican plus a single independent option). I think we could make an argument that your self-identification is more applicable to voting behavior than party registration (not sure how hard of an argument that is to make…or if it is actually valid, would need to do some research).  But that is an option.
+- V201228 DOES R THINK OF SELF AS DEMOCRAT, REPUBLICAN, OR INDEPENDENT:
+        - 5428 R/D
+        - 2527 Independent
+- V201230 NO PARTY IDENTIFICATION - CLOSER TO DEMOCRATIC PARTY OR REPUBLICAN PARTY:
+        - 1855 R/D
+- V202119: HOW DIFFICULT WAS IT FOR R TO VOTE:
+        - Likert variable (not difficult = 1 -> extremely difficult = 5)
+        - 6401 valid results
+        - I think this is the “dependent” variable we should use.  We have a high amount of responses so no issues with sample size
+- V202443: WHICH PARTY DOES R FEEL CLOSEST TO:
+        - 5810 valid results (R/D)
+
+
+```{r}
+filt <- data.df[, c("V201231x","V201230","V201228","V202119")]
+
+names(filt) = c('Party ID','Party Lean','Party Self ID','Voting Difficulty')
+
+head(filt)
+```
+The code below extracts true responses from voting difficulty data. If the response was scored on the 1-5 Likert Scale,then the data is unmodified, if it is not scored then we delete that row.
+
+```{r}
+df2 <- filt[!(filt$`Voting Difficulty` < 1 | filt$`Voting Difficulty` > 5),]
+
+df2$`Party ID` = ifelse(df2$`Party ID` == 1 | df2$`Party ID` == 2 | df2$`Party ID` == 3, "D", ifelse(df2$`Party ID` == 4, "Ind", ifelse(df2$`Party ID` == 5 | df2$`Party ID` == 6 | df2$`Party ID` == 7, "R", NA)))
+
+df2$`Party Lean` = ifelse(df2$`Party Lean` == 3, "D", ifelse(df2$`Party Lean` == 2, "Ind", ifelse(df2$`Party Lean` == 1, "R", NA)))
+df2$`Party Self ID` = ifelse(df2$`Party Self ID` == 1, "D", ifelse(df2$`Party Self ID` == 2, "R", ifelse(df2$`Party Self ID` == 3, "Ind", NA)))
+
+head(df2)
+```
+-The code above modifies the party ID column to be on a R/D/Ind/NA Scale where the specific scale can be given by
+1) -9. Refused
+2) -8. Don’t know
+3)  1. Strong Democrat
+4)  2. Not very strong Democrat
+5)  3. Independent-Democrat
+6)  4. Independent
+7)  5. Independent-Republican
+8)  6. Not very strong Republican
+9)  7. Strong Republican
+
+-The code above modifies the party lean column to store R/D/Ind/NA if party lean is 1,2,3,other respectively where the specified scale can be given by
+1) -9. Refused
+2) -8. Don’t know
+3) -1. Inapplicable
+4)  1. Closer to Republican
+5)  2. Neither {VOL in video and phone}
+6)  3. Closer to Democratic
+
+-The code above specifies D/R/Ind/NA if party self id is 1,2,3,other respectively where the specified scale can be given by
+1) -9. Refused
+2) -8. Don’t know
+3) -4. Technical error
+4)  0. No preference {VOL - video/phone only}
+5)  1. Democrat
+6)  2. Republican
+7)  3. Independent
+8)  5. Other party {SPECIFY}
+
+```{r}
+ind_voters = df2[(df2$`Party Self ID` == "Ind"),]
+```
+
+```{r}
+require(gridExtra)
+ind_voters_party_id <- ggplot(ind_voters, aes(x = `Party ID`)) +
+  geom_bar(color=c('blue','red','yellow','black'),aes(y = (..count..)/sum(..count..))) + ggtitle("Party ID for Self Identified Independents") + ylab("Proportion of Responses")
+
+ind_voters_party_lean <- ggplot(ind_voters, aes(x = `Party Lean`)) +
+  geom_bar(color=c('blue','red','yellow','black'),aes(y = (..count..)/sum(..count..))) + ggtitle("Party Lean for Self Identified Independents") + ylab("Proportion of Responses")
+grid.arrange(ind_voters_party_id,ind_voters_party_lean,ncol = 2)
+```
+
+
+```{r}
+
+df2$`Party Classification` = ifelse(df2$`Party ID` == "D", "D", ifelse(df2$`Party ID` == "R", "R", ifelse(df2$`Party Lean` == "D", "D", ifelse(df2$`Party Lean` == "R", "R", df2$`Party Self ID`))))
+
+table(df2$`Party Classification`)
+```
+
+
+```{r}
+df2 = df2[(df2$`Party Classification` == "D" | df2$`Party Classification` == "R"),]
+
+voter_data = na.omit(df2[,c(5,4)])
+
+dem_data = voter_data[(voter_data$`Party Classification` == "D"),]
+rep_data = voter_data[(voter_data$`Party Classification` == "R"),]
+
+
+head(voter_data)
+```
+
+
+```{r}
+require(gridExtra)
+plot1 <- ggplot(dem_data, aes(x = `Voting Difficulty`)) +
+  geom_bar(color='blue') + ggtitle("Voting Difficulty Democrats") + ylab("Count of Responses")
+plot2 <- ggplot(rep_data, aes(x = `Voting Difficulty`)) +
+  geom_bar(color='red')+ ggtitle("Voting Difficulty Republicans") + ylab("Count of Responses")
+grid.arrange(plot1, plot2, ncol=2)
+
+```
+
+### Hypothesis Test Selection:
+Our goal is to evaluate whether democratic or republican voters experience more voting difficulty. Upon analyzing the data, our reponse variable **Voting Difficulty** is an ordinal variable measured on a Likert Scale from 1-5 where 1 signifies less difficulty while 5 signifies more difficulty. Ordinal data results in the need for a **non-parametric test**. Additionally, we are comparing between two distinct groups without a natural pairing, **so a paired test is ruled out**. The samples here are independent as the perception of voting difficulty for one respondent does not inform on another's response. Finally, upon evaluating the response variable density across party lines, voting difficulty has a similar distribution in both cases. Therefore, the characteristics listed above meet the assumptions for a **Wilcoxon Rank Sum Test**.
+
+```{r}
+res <- wilcox.test(dem_data$`Voting Difficulty`, rep_data$`Voting Difficulty`)
+res
+```
+Wilcoxon Rank Sum Two Tailed Test. Null is voter difficulty is equal, alternative is voter difficulty is not equal
+```{r}
+res_2 <- wilcox.test(dem_data$`Voting Difficulty`, rep_data$`Voting Difficulty`, alternative = "less")
+res_2
+```
+Wilcoxon Rank Sum One Tailed Test. Null is voter difficulty is equal, alternative is dem voter difficulty is greater
+
+```{r}
+res_2 <- wilcox.test(dem_data$`Voting Difficulty`, rep_data$`Voting Difficulty`, alternative = "greater")
+res_2
+```
+Wilcoxon Rank Sum One Tailed Test. Null is voter difficulty is equal, alternative is dem voter difficulty is less

@@ -1,0 +1,131 @@
+---
+title: "Youtube Clickbait Title Report"
+subtitle: "Does clickbait play into views?"
+author: 'Oscar Casas'
+date: "12/6/2021"
+output:
+  bookdown::pdf_document2: 
+    toc: false
+editor_options: 
+  chunk_output_type: console
+---
+
+# Introduction
+
+For centuries individuals have looked for new sources of entertainment. From 
+books to television, the sources were usually in control of what people had 
+available. Since the inception of the internet however, that has completely 
+changed and anyone with a camera and an internet connection can create their 
+own content. Now that this pivot has been created, specifically on YouTube, 
+content creators need to be informed on what is the best way to compete on their
+platform. For this study, as YouTube content creators, we will focus specifically
+on YouTube. One of the key terms that have been floating around YouTube has been
+the term “click bait”. This is the idea that individuals upload videos with 
+misleading titles to lure viewers. While that specific idea may be outside the 
+scope of our analytical powers due to the high amount of volume of videos that 
+would need to be validated, the question does arise. How do titles and other 
+YouTube characteristics such as ratings affect the amount of views videos get?
+We explore this question through the use of a multitude of variables to analyze
+what variable has the strongest effect on views received. The variables considered:
+a) ratings, which is the proportion of likes to all dislikes and likes. This was
+chosen to see if the engagement after someone clicked on a video affected the
+amount of people who watched it after. b) proportion of uppercase letters. 
+Oftentimes videos will have bold titles with lots of uppercase letters to 
+emphasize or catch attention, it will be interesting to see how they affect 
+viewership. c) whether titles include question marks or exclamation points. 
+Titles often use these syntax to emphasize or create a luring title. d) title
+length. As title length increases less is seen in the thumbnail so that may 
+affect clicks as well. These variables are based on our input data which 
+consists of over 40,000 trending YouTube videos titles, likes and dislikes and 
+their number of views. While many different types of variables and measurements
+could be used to study what affects video views, these were chosen as the prime 
+focus to see what content creators should do at the time of posting in relation 
+to creating their titles.
+
+
+# Research Design
+
+## Research Question
+
+How does the title of a trending YouTube video affect the number of views that 
+it gets?
+
+
+## Method
+
+Our research design will be based on a quantitative approach, specifically an 
+experimental one, in which our research question will be answered by conducting
+statistical modeling experiments, with computer programming, to determine which 
+variables (associated with the title) relate to higher viewership in YouTube 
+videos.
+
+## Design
+
+We performed a longitudinal retrospective study on our Kaggle dataset with 
+“Trending Videos” as our target population. By operationalizing variables related 
+to trending video titles, we tested for linear relationships between title-based 
+variables and video views. After completing our exploratory analysis, we
+designed Ordinary Least Squares regression models using transformed and 
+un-transformed variables. We tested our model coefficients for significance at 
+a 5% level and compared each model to a reduced model that used only an intercept
+term. By making comparisons to a reduced model using an F-Test, we determined 
+whether the models we created were statistically significant at predicting views
+of trending videos.
+
+## Data
+
+Our data was taken from the website **Kaggle** and it contains several variables 
+on videos viewed within the United States version of YouTube’s trending section, 
+collected from January 2017 through to May 2018. The variables found within the 
+dataset are: video ID, date of trending, title, channel name, category, time 
+published, tags, number of views, likes and dislikes.
+
+Kaggle DataSet Link: https://www.kaggle.com/datasnaek/youtube-new?select-USvideos.csv=
+
+## Variables
+Since our research question was focused on the effect video titles have 
+on viewership, we narrowed our efforts to variables related to titles.
+
+\begin{enumerate}
+	\item \textbf{Title Length:} Anecdotally, our prior experience told us that titles of an excessive length make us unlikely to watch a video. Many people feel that excessive length is indicative of overselling a video. We hypothesized that more concise titles would receive more views than their larger counterparts. To operationalize Title Length into a metric variable, we counted the number of characters in each video title.
+	\item \textbf{Uppercase Proportion:} Our hypothesis was that the proportion of characters in a title that were uppercase could serve as a rough estimate of the level of title “clickbait.” Under this assumption, we predicted that a positive relationship would exist between the proportion of uppercase letters and views.
+\item \textbf{Contains a Question Mark:} Many videos try to catch the attention of viewers by hooking them with cliffhanger questions (e.g. “Will she fall out of the helicopter??? Watch and see.”). Our hypothesis was that these video titles may lure more people to watch a video because they get hooked by the title along with an interesting thumbnail picture.
+\item \textbf{Contains an Exclamation Mark:} As in the case of the previous variable, an exclamation mark is often used in an attempt to capture the viewer’s attention with sensationalized content. Subsequently, we hypothesized that the presence of an exclamation mark would lead to more views.
+\item \textbf{Contains an Ellipses:} Again, the use of an ellipses is another sensationalist tactic to hook potential viewers with clickbait. Similarly to the previous two variables, our hypothesis was that there would likely be more views as a result of the use of ellipses. 
+ 	\item \textbf{Rating:} YouTube videos don’t come with metric ratings by default, however, they come with a count of likes and a count of dislikes. We suspected that the total number of likes and dislikes is highly correlated with the number of views that a video received. To standardize these variables into a metric that scales evenly across videos, we created a Rating variable that compares the proportion of likes and dislikes for each video. Our hypothesis was that a higher proportion of likes to dislikes (higher Rating) would lead to more video views. The Rating variable was determined as follows:
+
+\begin{align*}
+	Rating &= \frac{Likes}{Likes + Dislikes}
+\end{align*}
+
+	\item \textbf{Views:} Our independent variable. The number of views received by a trending video at a given point in time.
+\end{enumerate}
+
+
+# Large Sample Assumptions
+
+\begin{enumerate}
+  \item \textbf{IID Data Sampling} Our dataset contains a list of daily YouTube trending videos over the course of several months. According to Variety magazine, “To determine the year’s top-trending videos, YouTube uses a combination of factors including measuring users interactions (number of views, shares, comments and likes). Note that they’re not the most-viewed videos overall for the calendar year”. We cannot make claims over the entire population of YouTube videos using this dataset, however, we do believe that each of the videos is representative of the "Trending Videos" distribution. The dataset is the population of trending videos over a period of time rather than a point-in-time snapshot. We can expect that the habits and preferences of YouTube viewers and maybe even the trending videos algorithm could change over time, meaning that the distribution that we are targeting may not be static. This could be an argument that the dataset is not IID, but we are choosing to ignore that and assume that we are targeting the same population distribution for all of our data.
+  \item \textbf{A unique Best Linear Predictor exists with variance > 0} A unique BLP exists when:
+    \begin{enumerate}
+	  \item None of the variables in the dataset are perfectly colinear
+	  \item $X^TX$ is invertible, meaning that no dependent variable can be written as a linear combination of the other dependent variables
+	\end{enumerate}
+	We know that none of our variables are perfectly colinear because they are all separate aspects of a YouTube title. Likewise, R automatically drops perfectly colinear variables when they're detected. None of our dependent variables can be written as a linear combination of the others.
+\end{enumerate}
+
+# Data Cleaning and Transformation
+
+Here we will load, clean and transform our dataset to better suit our analysis.
+
+## Loading libraries
+
+```{r Libraries, include=TRUE, echo=TRUE, message=TRUE}
+library(tidyverse)
+library(patchwork)
+library(stargazer)
+library(sandwich)
+library(lmtest)
+```
+
+## Loading DataSet 
