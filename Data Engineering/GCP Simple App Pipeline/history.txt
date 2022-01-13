@@ -1,0 +1,633 @@
+pwd
+cd Berkeley
+cd Berkeley/
+ls
+cd
+ls
+mkdir w205
+cd w205/
+ls
+cd w205
+ls
+branch
+ls
+git branch
+git clone https://github.com/mids-w205-koister/project-1-oscarcasas21.git
+ls
+cd project-1-oscarcasas21/
+git branch assignment
+git checkout assignment
+cd
+ls
+cd w205
+ls
+cd project-1-oscarcasas21/
+git branch
+ls
+vim readme.md
+cd w205
+cd project-1-oscarcasas21/
+bq query --use_legacy_sql=false '
+SELECT start_station_id,end_station_id,Count(trip_id) AS num_trips
+FROM   `bigquery-public-data.san_francisco.bikeshare_trips`
+WHERE  Format_date('%A', start_date) NOT IN ( "sat", "sun" )
+       AND Format_timestamp('%H', start_date) IN ( "07", "08", "09", "16","17", "18" )
+       AND subscriber_type = "Subscriber"
+GROUP  BY start_station_id,
+          end_station_id
+ORDER  BY num_trips DESC; 
+bq query --use_legacy_sql=false '
+bq query --use_legacy_sql=false '
+SELECT Count(DISTINCT bike_number) AS Number_of_bikes
+FROM  `bigquery-public-data.san_francisco.bikeshare_trips`
+'SELECT Count(DISTINCT bike_number) AS Number_of_bikes
+bq query --use_legacy_sql=false '
+SELECT Count(DISTINCT bike_number) AS Number_of_bikes
+FROM  `bigquery-public-data.san_francisco.bikeshare_trips`
+'
+bq query --use_legacy_sql=false '
+SELECT Count(DISTINCT trip_id)
+FROM   `bigquery-public-data.san_francisco.bikeshare_trips`'
+bq query --use_legacy_sql=false '
+SELECT Min(start_date),
+       Max(end_date)
+FROM   `bigquery-public-data.san_francisco.bikeshare_trips` '
+```sql
+bq query --use_legacy_sql=false '
+SELECT Format_timestamp('%H', start_date) AS start_time,
+       Count(trip_id)                     AS num_trips  
+FROM   `bigquery-public-data.san_francisco.bikeshare_trips`
+WHERE  Format_date('%A', start_date) NOT IN ( "sat", "sun" )
+       AND Format_timestamp('%H', start_date) IN ( "07", "08", "09", "16",
+                                                   "17", "18" )
+       AND subscriber_type = "subscriber"
+ORDER  BY num_trips DESC; '
+rr
+r
+r
+'
+'
+''
+esc
+q query --use_legacy_sql=false '
+esc
+'''
+```
+bq query --use_legacy_sql=false '
+SELECT Format_timestamp('%H', start_date) AS start_time,
+       Count(trip_id)                     AS num_trips  
+FROM   `bigquery-public-data.san_francisco.bikeshare_trips`
+WHERE  Format_date('%A', start_date) NOT IN ( "sat", "sun" )
+       AND Format_timestamp('%H', start_date) IN ( "07", "08", "09", "16",
+                                                   "17", "18" )
+       AND subscriber_type = "subscriber"
+ORDER  BY num_trips DESC; '
+bq query --use_legacy_sql=false '
+SELECT Format_timestamp('%H', start_date) AS start_time,
+       Count(trip_id)                     AS num_trips  
+FROM   `bigquery-public-data.san_francisco.bikeshare_trips`
+WHERE  Format_date('%A', start_date) NOT IN ( "sat", "sun" )
+       AND Format_timestamp('%H', start_date) IN ( "07", "08", "09", "16",
+                                                   "17", "18" )
+       AND subscriber_type = "subscriber"
+ORDER  BY num_trips DESC; '
+bq query --use_legacy_sql=false '
+SELECT start_station_id,end_station_id,Count(trip_id) AS num_trips
+FROM   `bigquery-public-data.san_francisco.bikeshare_trips`
+WHERE  Format_date('%A', start_date) NOT IN ( "sat", "sun" )
+       AND Format_timestamp('%H', start_date) IN ( "07", "08", "09", "16","17", "18" )
+       AND subscriber_type = "Subscriber"
+GROUP  BY start_station_id,
+          end_station_id
+ORDER  BY num_trips DESC; '
+bq query --use_legacy_sql=false '
+SELECT HOUR(start_date) AS start_time,
+       Count(trip_id)                     AS num_trips  
+FROM   `bigquery-public-data.san_francisco.bikeshare_trips`
+WHERE  DAYOFWEEK(start_date) BETWEEN 2 AND 6"
+       AND HOUR(start_date) IN ( "07", "08", "09", "16",
+                                  "17", "18" )
+       AND subscriber_type = "subscriber"
+ORDER  BY num_trips DESC; '
+bq query --use_legacy_sql=false '
+SELECT HOUR(start_date) AS start_time,
+       Count(trip_id)                     AS num_trips  
+FROM   `bigquery-public-data.san_francisco.bikeshare_trips`
+WHERE  DAYOFWEEK(start_date) BETWEEN 2 AND 6"
+       AND HOUR(start_date) IN ( "07", "08", "09", "16",
+                                  "17", "18" )
+       AND subscriber_type = "subscriber"
+'
+SELECT HOUR(start_date) AS start_time,
+FROM   `bigquery-public-data.san_francisco.bikeshare_trips`
+WHERE  DAYOFWEEK(start_date) BETWEEN 2 AND 6
+ORDER  BY num_trips DESC; '
+'
+bq query --use_legacy_sql=false '
+SELECT HOUR(start_date) AS start_time,
+       Count(trip_id)                     AS num_trips  
+FROM   `bigquery-public-data.san_francisco.bikeshare_trips`
+WHERE  DAYOFWEEK(start_date) BETWEEN 2 AND 6
+       AND HOUR(start_date) IN ( "07", "08", "09", "16",
+                                  "17", "18" )
+       AND subscriber_type = "subscriber"
+ORDER  BY num_trips DESC; '
+bq query --use_legacy_sql=false '
+SELECT HOUR(start_date) AS start_time,
+       Count(trip_id)   AS num_trips  
+FROM   `bigquery-public-data.san_francisco.bikeshare_trips`
+WHERE  DATEPART(start_date, GETDATE()) BETWEEN 2 AND 6
+       AND HOUR(start_date) IN ( "07", "08", "09", "16",
+                                  "17", "18" )
+       AND subscriber_type = "subscriber"
+ORDER  BY num_trips DESC; '
+bq query --use_legacy_sql=false '
+SELECT Format_timestamp('%H', start_date) AS start_time,
+       Count(trip_id)                     AS num_trips  
+FROM   `bigquery-public-data.san_francisco.bikeshare_trips`
+WHERE  Format_date('%A', start_date) NOT IN ( "sat", "sun" )
+       AND Format_timestamp('%H', start_date) IN ( "07", "08", "09", "16",
+                                                   "17", "18" )
+       AND subscriber_type = "subscriber"
+ORDER  BY num_trips DESC; '
+bq query --use_legacy_sql=false '
+SELECT Format_timestamp('%"H', start_date) AS start_time,
+       Count(trip_id)                     AS num_trips  
+FROM   `bigquery-public-data.san_francisco.bikeshare_trips`
+WHERE  Format_date('%A', start_date) NOT IN ( "sat", "sun" )
+       AND Format_timestamp('%"H', start_date) IN ( "07", "08", "09", "16",
+                                                   "17", "18" )
+       AND subscriber_type = "subscriber"
+ORDER  BY num_trips DESC; '
+bq query --use_legacy_sql=false '
+SELECT Format_timestamp('%"H', start_date) AS start_time,
+       Count(trip_id)                     AS num_trips  
+FROM   'bigquery-public-data.san_francisco.bikeshare_trips'
+WHERE  Format_date('%A', start_date) NOT IN ( "sat", "sun" )
+       AND Format_timestamp('%"H', start_date) IN ( "07", "08", "09", "16",
+                                                   "17", "18" )
+       AND subscriber_type = "subscriber"
+ORDER  BY num_trips DESC; '
+bq query --use_legacy_sql=false '
+SELECT Format_timestamp('%"H', start_date) AS start_time,
+       Count(trip_id)                     AS num_trips  
+FROM   `bigquery-public-data.san_francisco.bikeshare_trips`
+WHERE  Format_date('%"A', start_date) NOT IN ( "sat", "sun" )
+       AND Format_timestamp('%"H', start_date) IN ( "07", "08", "09", "16",
+                                                   "17", "18" )
+       AND subscriber_type = "subscriber"
+ORDER  BY num_trips DESC; 
+'
+'
+''
+"
+bq query --use_legacy_sql=false '
+SELECT Format_timestamp('%"H', start_date) AS start_time,
+       Count(trip_id)                     AS num_trips  
+FROM   `bigquery-public-data.san_francisco.bikeshare_trips`
+WHERE  Format_date('%"A', start_date) NOT IN ( "sat", "sun" )
+       AND Format_timestamp('%"H', start_date) IN ( "07", "08", "09", "16",
+                                                   "17", "18" )
+       AND subscriber_type = "subscriber"
+ORDER  BY num_trips DESC; '
+"
+bq query --use_legacy_sql=false '
+SELECT Format_timestamp("%H", start_date) AS start_time,
+       Count(trip_id)                     AS num_trips  
+FROM   `bigquery-public-data.san_francisco.bikeshare_trips`
+WHERE  Format_date("%A", start_date) NOT IN ( "sat", "sun" )
+       AND Format_timestamp("%H", start_date) IN ( "07", "08", "09", "16",
+                                                   "17", "18" )
+       AND subscriber_type = "subscriber"
+ORDER  BY num_trips DESC; 
+'
+bq query --use_legacy_sql=false '
+SELECT Format_timestamp("%H", start_date) AS start_time,
+       Count(trip_id)                     AS num_trips,
+       subscriber_type,
+FROM   `bigquery-public-data.san_francisco.bikeshare_trips`
+WHERE  Format_date("%A", start_date) != "sun"
+        AND Format_date("%A", start_date) != "sat"
+GROUP  BY start_time,subscriber_type,
+ORDER  BY num_trips DESC; '
+bq query --use_legacy_sql=false '
+SELECT Format_timestamp("%H", start_date) AS start_time,
+       Count(trip_id)                     AS num_trips,
+       subscriber_type,
+FROM   `bigquery-public-data.san_francisco.bikeshare_trips`
+WHERE  Format_date("%A", start_date) != "sun"
+        AND Format_date("%A", start_date) != "sat"
+GROUP  BY start_time,subscriber_type
+ORDER  BY num_trips DESC; '
+```sql
+bq query --use_legacy_sql=false '
+SELECT start_station_name,
+       Count(trip_id) AS num_trips
+FROM   `bigquery-public-data.san_francisco.bikeshare_trips`
+WHERE  Format_date("%a", start_date) NOT IN ( "sat", "sun" )
+       AND Format_timestamp("%h", start_date) IN ( "16", "17", "18" )
+       AND subscriber_type = "Subscriber"
+GROUP  BY start_station_name
+ORDER  BY num_trips DESC 
+LIMIT 5; '
+'''
+```
+bq query --use_legacy_sql=false '
+SELECT start_station_name,
+       Count(trip_id) AS num_trips
+FROM   `bigquery-public-data.san_francisco.bikeshare_trips`
+WHERE  Format_date("%a", start_date) NOT IN ( "sat", "sun" )
+       AND Format_timestamp("%h", start_date) IN ( "16", "17", "18" )
+       AND subscriber_type = "Subscriber"
+GROUP  BY start_station_name
+ORDER  BY num_trips DESC 
+LIMIT 5; '
+bq query --use_legacy_sql=false '
+SELECT start_station_name,
+Count(trip_id) AS num_trips
+FROM   `bigquery-public-data.san_francisco.bikeshare_trips`
+WHERE  Format_date("%A", start_date) NOT IN ( "sat", "sun" )
+       AND Format_timestamp("%H", start_date) IN ( "16", "17", "18" )
+       AND subscriber_type = "Subscriber"
+GROUP  BY start_station_name
+ORDER  BY num_trips DESC
+LIMIT 5; '
+cd ls
+ls
+cd w205
+cd project-1-oscarcasas21/
+bq query --use_legacy_sql=false '
+SELECT Count(trip_id) AS num_trips
+FROM   `bigquery-public-data.san_francisco.bikeshare_trips`
+WHERE  Format_date("%A", start_date) NOT IN ( "sat", "sun" )
+       AND Format_timestamp("%H", start_date) IN ("08","09","07", "16", "17", "18" )
+       AND subscriber_type = "Customer";'
+jupyter notebook Project_1.ipynb
+jupyter notebook --ip=0.0.0.0 --port=8888 --no-browser &
+jupyter notebook
+cd w205
+cd project-1-oscarcasas21/
+git branch
+wget http://repo.continuum.io/archive/Anaconda3-4.0.0-Linux-x86_64.sh
+bash Anaconda3-4.0.0-Linux-x86_64.sh
+pip install tensorflow
+pip install keras
+ls ~/.jupyter/jupyter_notebook_config.py
+jupyter notebook --generate-config
+ls
+ENTER
+c = get_config()
+c.NotebookApp.ip = '*'
+c.NotebookApp.open_browser = False
+c.NotebookApp.port = <22>
+jupyter-notebook --no-browser --port=22
+jupyter-notebook --no-browser 
+ls
+git rm ENTER
+git rm Anaconda3-4.0.0-Linux-x86_64.sh 
+ls
+cd w205
+cd project-1-oscarcasas21/
+git branch
+ls
+cd
+ls
+cd w205
+cd project-1-oscarcasas21/
+ls
+cd w205/
+cd project-3-oscarcasas21/
+ls
+branch
+ls
+cd project-3-oscarcasas21/
+cd w205/
+ls
+cd w205/
+ls
+git clone https://github.com/mids-w205-koister/project-3-oscarcasas21.git
+ls
+cd project-3-oscarcasas21/
+ls
+git branch assignment
+git checkout assignment
+ls
+git branch
+ls
+git clone https://github.com/mids-w205-koister/project-3-oscarcasas21.git
+ls
+rm project-3-oscarcasas21/
+rmdir project-3-oscarcasas21/
+rm -r project-3-oscarcasas21/
+y
+ls
+rmdir project-3-oscarcasas21/
+rm -rf project-3-oscarcasas21/
+ls
+git branch
+git pull
+git branch -a
+git branch remotes/origin/assignment
+git checkout assignment
+git pull --all
+git merge remotes/origin/assignment
+ls
+git merge remotes/origin/assignment
+git pull --all
+git merge remotes/origin/assignment
+git pull --all
+git merge remotes/origin/assignment
+ls
+touch test.txt
+ls
+rm test.txt
+ls
+docker-compose up -d
+docker-compose exec kafka kafka-topics --create --topic events --partitions 1 --replication-factor 1 --if-not-exists --bootstrap-server kafka:29092
+docker-compose exec mids ab -n 10 -H "Host: user1.comcast.com" http://localhost:5000/
+cd w205/
+cd project-3-oscarcasas21/
+docker-compose exec mids ab -n 10 -H "Host: user1.comcast.com" http://localhost:5000/
+docker-compose exec mids ab -n 10 -H "Host: user1.comcast.com" http://localhost:5000/purchases/sword/katana
+docker-compose exec mids ab -n 10 -H "Host: user1.comcast.com" http://localhost:5000/purchases/armour/iron
+docker-compose exec mids ab -n 10 -H "Host: user1.comcast.com" http://localhost:5000/join_guild/vikings
+ls -l generate.sh
+chmod +x generate.sh
+bash ./generate.sh
+docker-compose exec mids ab -n 10 -H "Host: user1.comcast.com" http://localhost:5000/purchases/sword/katana
+docker-compose exec mids curl "http://localhost:5000/purchases/potion/invisibility"
+docker-compose exec mids curl "http://localhost:5000/join_guild/nights"
+docker-compose exec mids curl "http://localhost:5000/purchases/sword/long-sword"
+docker-compose exec mids curl "http://localhost:5000/purchases/sword"
+git pull --all
+docker-compose exec mids ab -n 10 -H "Host: user1.comcast.com" http://localhost:5000/purchases/sword/katana
+docker-compose exec mids curl "http://localhost:5000/purchases/potion/speed"
+docker-compose exec mids curl "http://localhost:5000/purchases/sword/katana"
+docker-compose exec mids curl "http://localhost:5000/join_guild/nights"
+docker-compose exec mids curl -X POST "http://localhost:5000/login?id="$ID
+docker-compose exec mids curl "http://localhost:5000/join_guild/samurai"
+git pull --all
+docker-compose exec mids ab -n 10 -H "Host: user1.comcast.com" http://localhost:5000/purchases/sword/katana
+docker-compose exec mids curl "http://localhost:5000/purchases/sword/katana"
+docker-compose exec mids curl "http://localhost:5000/join_guild/nights"
+docker-compose exec mids curl "http://localhost:5000/join_guild/vikings"
+vi generate.sh
+git pull --all
+docker-compose exec mids curl "http://localhost:5000/purchases/sword/katana"
+docker-compose exec mids ab -n 10 -H "Host: user1.comcast.com" http://localhost:5000/purchases/sword/katana
+docker-compose exec mids curl "http://localhost:5000/join_guild/vikings"
+docker-compose exec mids curl "http://localhost:5000/join_guild/nights"
+docker-compose exec mids curl "http://localhost:5000/join_guild/samurai"
+docker-compose exec mids curl "http://localhost:5000/purchases/potion/invisibility"
+git pull --all
+docker-compose exec mids curl "http://localhost:5000/purchases/potion/invisibility"
+git pull --all
+docker-compose exec mids curl "http://localhost:5000/purchases/potion/invisibility"
+docker-compose exec mids ab -n 10 -H "Host: user1.comcast.com" http://localhost:5000/purchases/sword/katana
+docker-compose exec mids curl "http://localhost:5000/purchases/sword/katana"
+docker-compose exec mids ab -n 10 -H "Host: user1.comcast.com" http://localhost:5000/purchases/sword/katana
+git pull --all
+git stash push
+git stash
+git pull --all
+git push
+git pull --all
+rm generate.sh 
+ls
+git pull --all
+docker-compose exec mids curl "http://localhost:5000/purchase_sword/saber"
+bash ./generate.sh
+cd w205/
+cd project-3-oscarcasas21/
+ls
+git pull -all
+git pull --all
+git branch --set-upstream-to=origin/assignment
+git pull
+ls
+git pull --all
+ls
+docker-compose up -d
+docker-compose ps
+docker-compose exec kafka kafka-topics --create --topic events --partitions 1 --replication-factor 1 --if-not-exists --bootstrap-server kafka:29092
+docker-compose exec mids env FLASK_APP=/w205/project-3-oscarcasas21/game_api.py flask run --host 0.0.0.0
+docker-compose down
+docker-compose up -d
+docker-compose exec kafka kafka-topics --create --topic events --partitions 1 --replication-factor 1 --if-not-exists --bootstrap-server kafka:29092
+docker-compose exec mids env FLASK_APP=/w205/project-3-oscarcasas21/game_api.py flask run --host 0.0.0.0
+docker-compose down
+git add generate.sh 
+git add game_api.py
+git add write_stream.py 
+git add docker-compose.yml 
+git add Oscar_Casas_Project_3.ipynb 
+git pull --all
+docker-compose down
+docker-compose up -d
+docker-compose exec kafka kafka-topics --create --topic events --partitions 1 --replication-factor 1 --if-not-exists --bootstrap-server kafka:29092
+docker-compose exec mids env FLASK_APP=/w205/project-3-oscarcasas21/game_api.py flask run --host 0.0.0.0
+cd w205/
+cd project-3-oscarcasas21/
+docker-compose exec mids kafkacat -C -b kafka:29092 -t events -o beginning
+cd w205/
+cd project-3-oscarcasas21/
+docker-compose exec cloudera hadoop fs -ls /tmp/
+docker-compose exec spark pyspark
+docker-compose exec presto presto --server presto:8080 --catalog hive --schema default
+ls -l generate.sh
+cd w205/
+cd project-3-oscarcasas21/
+ls -l generate.sh
+chmod +x generate.sh
+bash ./generate.sh
+docker-compose exec spark spark-submit /w205/project-3-oscarcasas21/write_stream.py
+cd w205/
+cd project-3-oscarcasas21/
+ls -l generate.sh
+chmod +x generate.sh
+bash ./generate.sh
+docker-compose exec spark spark-submit /w205/project-3-oscarcasas21/write_stream.py
+cd w205/
+cd project-3-oscarcasas21/
+docker-compose exec cloudera hadoop fs -ls /tmp/
+docker-compose exec spark pyspark
+docker-compose exec presto presto --server presto:8080 --catalog hive --schema default
+git pull --all
+docker-compose exec spark spark-submit /w205/project-3-oscarcasas21/filtered_writes.py
+ls
+docker-compose exec spark spark-submit /w205/project-3-oscarcasas21/filter_writes.py
+docker-compose exec cloudera hadoop fs -ls /tmp/
+p/
+Found 8 items
+drwxrwxrwt   - root   supergroup          0 2021-12-09 06:46 /tmp/checkpoints_for_join_guild
+drwxrwxrwt   - root   supergroup          0 2021-12-09 06:46 /tmp/checkpoints_for_purchase_sword
+drwxrwxrwt   - mapred mapred              0 2016-04-06 02:26 /tmp/hadoop-yarn
+drwx-wx-wx   - hive   supergroup          0 2021-12-09 06:47 /tmp/hive
+drwxr-xr-x   - root   supergroup          0 2021-12-09 06:46 /tmp/join_guild
+drwxrwxrwt   - mapred hadoop              0 2016-04-06 02:28 /tmp/logs
+drwxr-xr-x   - root   supergroup          0 2021-12-09 06:46 /tmp/purchase_sword
+drwxr-xr-x   - root   supergroup          0 2021-12-09 06:47 /tmp/purchase_swords
+p/
+Found 8 items
+drwxrwxrwt   - root   supergroup          0 2021-12-09 06:46 /tmp/checkpoints_for_join_guild
+drwxrwxrwt   - root   supergroup          0 2021-12-09 06:46 /tmp/checkpoints_for_purchase_sword
+drwxrwxrwt   - mapred mapred              0 2016-04-06 02:26 /tmp/hadoop-yarn
+drwx-wx-wx   - hive   supergroup          0 2021-12-09 06:47 /tmp/hive
+drwxr-xr-x   - root   supergroup          0 2021-12-09 06:46 /tmp/join_guild
+drwxrwxrwt   - mapred hadoop              0 2016-04-06 02:28 /tmp/logs
+drwxr-xr-x   - root   supergroup          0 2021-12-09 06:46 /tmp/purchase_sword
+drwxr-xr-x   - root   supergroup          0 2021-12-09 06:47 /tmp/purchase_swords
+docker-compose exec cloudera hadoop fs -ls /tmp/purchases/
+docker-compose exec cloudera hadoop fs -ls /tmp/purchase_swords/
+docker-compose exec spark pyspark
+docker-compose exec presto presto --server presto:8080 --catalog hive --schema default
+docker-compose down
+docker-compose up -d
+docker-compose exec kafka kafka-topics --create --topic events --partitions 1 --replication-factor 1 --if-not-exists --bootstrap-server kafka:29092
+docker-compose exec mids env FLASK_APP=/w205/project-3-oscarcasas21/game_api.py flask run --host 0.0.0.0
+docker-compose exec mids kafkacat -C -b kafka:29092 -t events -o beginning
+cd w205/
+cd project-3-oscarcasas21/
+docker-compose exec mids kafkacat -C -b kafka:29092 -t events -o beginning
+docker-compose down
+cd w205/
+cd project-3-oscarcasas21/
+docker-compose down
+docker-compose up -d
+docker-compose exec kafka kafka-topics --create --topic events --partitions 1 --replication-factor 1 --if-not-exists --bootstrap-server kafka:29092
+docker-compose exec mids env FLASK_APP=/w205/project-3-oscarcasas21/game_api.py flask run --host 0.0.0.0
+bash ./generate.sh
+ls -l generate.sh
+cd w205/
+cd project-3-oscarcasas21/
+bash ./generate.sh
+docker-compose exec spark spark-submit /w205/project-3-oscarcasas21/filter_writes.py
+docker-compose exec cloudera hadoop fs -ls /tmp/
+docker-compose exec spark spark-submit /w205/project-3-oscarcasas21/filter_writes.py
+docker-compose exec spark spark-submit /w205/project-3-oscarcasas21/write_stream.py
+docker-compose exec cloudera hadoop fs -ls /tmp/
+docker-compose exec spark spark-submit /w205/project-3-oscarcasas21/write_stream.py
+cd w205/
+cd project-3-oscarcasas21/
+ls -l generate.sh
+chmod +x generate.sh
+bash ./generate.sh
+docker-compose exec spark spark-submit /w205/project-3-oscarcasas21/filter_writes.py
+docker-compose exec cloudera hadoop fs -ls /tmp/
+docker-compose exec spark spark-submit /w205/project-3-oscarcasas21/filter_writes.py
+git pull --all
+docker-compose exec spark spark-submit /w205/project-3-oscarcasas21/filter_writes.py
+git pull --all
+docker-compose exec spark spark-submit /w205/project-3-oscarcasas21/filter_writes.py
+docker-compose exec cloudera hadoop fs -ls /tmp/
+docker-compose exec cloudera hadoop fs -ls /tmp/purchase_sword/
+docker-compose exec presto presto --server presto:8080 --catalog hive --schema default
+docker-compose exec cloudera hadoop fs -ls /tmp/
+df = spark.read.parquet('/tmp/purchase_sword')
+docker-compose exec spark pyspark
+docker-compose exec presto presto --server presto:8080 --catalog hive --schema default
+cd w205/
+cd project-3-oscarcasas21/
+docker-compose down
+docker-compose up -d
+docker-compose exec kafka kafka-topics --create --topic events --partitions 1 --replication-factor 1 --if-not-exists --bootstrap-server kafka:29092
+docker-compose exec mids env FLASK_APP=/w205/project-3-oscarcasas21/game_api.py flask run --host 0.0.0.0
+docker-compose exec mids kafkacat -C -b kafka:29092 -t events -o beginning
+cd w205/
+cd project-3-oscarcasas21/
+docker-compose exec mids kafkacat -C -b kafka:29092 -t events -o beginning
+cd w205/
+cd project-3-oscarcasas21/
+ls -l generate.sh
+chmod +x generate.sh
+bash ./generate.sh
+docker-compose exec spark spark-submit /w205/project-3-oscarcasas21/filter_writes.py
+git pull -all
+git pull --all
+docker-compose exec spark spark-submit /w205/project-3-oscarcasas21/filter_writes.py
+docker-compose exec cloudera hadoop fs -ls /tmp/
+git pull --all
+docker-compose exec spark spark-submit /w205/project-3-oscarcasas21/filter_writes.py
+docker-compose exec cloudera hadoop fs -ls /tmp/
+docker-compose down
+docker-compose up -d
+docker-compose exec kafka kafka-topics --create --topic events --partitions 1 --replication-factor 1 --if-not-exists --bootstrap-server kafka:29092
+docker-compose exec mids env FLASK_APP=/w205/project-3-oscarcasas21/game_api.py flask run --host 0.0.0.0
+cd w205/
+cd project-3-oscarcasas21/
+docker-compose exec mids kafkacat -C -b kafka:29092 -t events -o beginning
+cd w205/
+cd project-3-oscarcasas21/
+git pull --all
+docker-compose up -d
+docker-compose exec kafka kafka-topics --create --topic events --partitions 1 --replication-factor 1 --if-not-exists --bootstrap-server kafka:29092
+docker-compose exec mids env FLASK_APP=/w205/project-3-oscarcasas21/game_api.py flask run --host 0.0.0.0
+docker-compose down
+docker-compose up -d
+docker-compose exec kafka kafka-topics --create --topic events --partitions 1 --replication-factor 1 --if-not-exists --bootstrap-server kafka:29092
+docker-compose exec mids env FLASK_APP=/w205/project-3-oscarcasas21/game_api.py flask run --host 0.0.0.0
+ls -l generate.sh
+chmod +x generate.sh
+bash ./generate.sh
+docker-compose exec spark spark-submit /w205/project-3-oscarcasas21/filter_writes.py
+docker-compose exec cloudera hadoop fs -ls /tmp/
+docker-compose exec cloudera hadoop fs -ls /tmp/purchase_sword/
+docker-compose exec spark pyspark
+ls -l generate.sh
+cd w205/
+cd project-3-oscarcasas21/
+ls -l generate.sh
+chmod +x generate.sh
+bash ./generate.sh
+docker-compose exec spark spark-submit /w205/project-3-oscarcasas21/write_stream.py
+docker-compose exec cloudera hadoop fs -ls /tmp/
+docker-compose exec spark spark-submit /w205/project-3-oscarcasas21/filter_writes.py
+cd w205/
+cd project-3-oscarcasas21/
+docker-compose exec spark spark-submit /w205/project-3-oscarcasas21/filter_writes.py
+git pull --all]
+git pull --all
+docker-compose exec spark spark-submit /w205/project-3-oscarcasas21/filter_writes.py
+docker-compose exec spark spark-submit /w205/project-3-oscarcasas21/write_stream.py
+docker-compose exec cloudera hadoop fs -ls /tmp/
+docker-compose exec spark pyspark
+docker-compose down
+cd w205/
+docker-compose up -d
+docker-compose exec kafka kafka-topics --create --topic events --partitions 1 --replication-factor 1 --if-not-exists --bootstrap-server kafka:29092
+docker-compose exec mids env FLASK_APP=/w205/project-3-oscarcasas21/game_api.py flask run --host 0.0.0.0
+cd w205/
+cd project-3-oscarcasas21/
+docker-compose exec mids kafkacat -C -b kafka:29092 -t events -o beginning
+docker-compose exec mids kafkacat -C -b kafka:29092 -t events -o beginning
+cd w205/
+cd project-3-oscarcasas21/
+docker-compose exec mids kafkacat -C -b kafka:29092 -t events -o beginning
+git pull --all
+docker-compose down
+docker-compose up -d
+docker-compose exec kafka kafka-topics --create --topic events --partitions 1 --replication-factor 1 --if-not-exists --bootstrap-server kafka:29092
+docker-compose exec mids env FLASK_APP=/w205/project-3-oscarcasas21/game_api.py flask run --host 0.0.0.0
+cd w205/
+cd project-3-oscarcasas21/
+ls -l generate.sh
+chmod +x generate.sh
+bash ./generate.sh
+docker-compose exec cloudera hadoop fs -ls /tmp/
+docker-compose exec cloudera hadoop fs -ls /tmp/purchase_sword/
+docker-compose exec spark spark-submit /w205/project-3-oscarcasas21/filter_writes.py
+docker-compose exec spark spark-submit /w205/project-3-oscarcasas21/write_stream.py
+docker-compose exec cloudera hadoop fs -ls /tmp/
+docker-compose exec cloudera hadoop fs -ls /tmp/purchase_sword/
+docker-compose exec presto presto --server presto:8080 --catalog hive --schema default
+docker-compose ps
+cd w205/
+cd project-3-oscarcasas21/
+docker-compose ps
+docker-compose exec presto presto --server presto:8080 --catalog hive --schema default
+cd w205/
+cd project-3
+cd project-3-oscarcasas21/
+history
+history -> history.txt
+history -w history.txt
