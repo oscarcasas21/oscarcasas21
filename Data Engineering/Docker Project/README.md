@@ -16,7 +16,7 @@ to be to be queried.  We will need to:
 
 # Files
 
--Final Project is in the Docker Project notebook
--All code used is in the Docker Code notebook
--history of linux commands is in history.txt file
--docker compose file is also available
+- Final Project is in the Docker Project notebook
+- All code used is in the Docker Code notebook
+- history of linux commands is in history.txt file
+- docker compose file is also available
