@@ -1,0 +1,9 @@
+json
+iplotly
+pandas
+nltk
+scikit-learn
+Flask
+Bar
+joblib
+sqlalchemy

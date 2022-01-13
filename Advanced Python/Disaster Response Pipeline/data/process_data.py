@@ -6,9 +6,9 @@ from sqlalchemy import create_engine
 
 def load_data(messages_filepath, categories_filepath):
     
-    messages = pd.read_csv(messages_filepath)
-    categories = pd.read_csv(categories_filepath)
-    df = pd.merge(messages,categories,on='id')
+    messages_data = pd.read_csv(messages_filepath)
+    categories_data = pd.read_csv(categories_filepath)
+    df = pd.merge(messages_data,categories_data,on='id')
     return df 
 
 
@@ -18,8 +18,8 @@ def clean_data(df):
     categories = df['categories'].str.split(pat=';',expand=True)
     
     #Fix the categories columns name
-    row = categories.iloc[[1]]
-    category_colnames = [category_name.split('-')[0] for category_name in row.values[0]]
+    first_row = categories.iloc[[1]]
+    category_colnames = [category_name.split('-')[0] for category_name in first_row.values[0]]
     categories.columns = category_colnames
     
     for column in categories:
@@ -37,6 +37,7 @@ def clean_data(df):
 def save_data(df, database_filename):
 
     engine = create_engine('sqlite:///'+ database_filename)
+#     table_name = database_filename.replace(".db","") + "_table"
     df.to_sql(database_filename, engine, index=False, if_exists='replace')
 
 

@@ -1,3 +1,19 @@
+"""
+Classifier Trainer
+Project: Disaster Response Pipeline (Udacity - Data Science Nanodegree)
+
+Sample Script Syntax:
+> python train_classifier.py <path to sqllite  destination db> <path to the pickle file>
+
+Sample Script Execution:
+> python train_classifier.py ../data/disaster_response_db.db classifier.pkl
+
+Arguments:
+    1) Path to SQLite destination database (e.g. disaster_response_db.db)
+    2) Path to pickle file name where ML model needs to be saved (e.g. classifier.pkl)
+"""
+
+# import libraries
 import nltk
 nltk.download('punkt')
 nltk.download('wordnet')
@@ -30,10 +46,18 @@ from sklearn.base import BaseEstimator,TransformerMixin
 
 def load_data_from_db(database_filepath):
     """
-    Loads the data from the database residing at a specific location using the file path
+    Load Data from the Database Function
+    
+    Arguments:
+        database_filepath -> Path to SQLite destination database (e.g. disaster_response_db.db)
+    Output:
+        X -> a dataframe containing features
+        Y -> a dataframe containing labels
+        category_names -> List of categories name
     """
     
     engine = create_engine('sqlite:///' + database_filepath)
+#     table_name = os.path.basename(database_filepath).replace(".db","") + "_table"
     df = pd.read_sql_table(database_filepath,engine)
     
     #Remove child alone as it has all zeros only
@@ -45,47 +69,57 @@ def load_data_from_db(database_filepath):
     
     X = df['message']
     y = df.iloc[:,4:]
-
-    category_names = y.columns
+    
+    #print(X)
+    #print(y.columns)
+    category_names = y.columns # This will be used for visualization purpose
     return X, y, category_names
 
 
-def tokenize(text,url_place_holder_string="urlplaceholder"):
+def tokenize(text_data,url_place_holder="urlplaceholder"):
     """
     Tokenize the text function
+    
+    Arguments:
+        text -> Text message which needs to be tokenized
+    Output:
+        clean_tokens -> List of tokens extracted from the provided text
     """
     
     # Replace all urls with a urlplaceholder string
     url_regex = 'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+'
     
     # Extract all the urls from the provided text 
-    detected_urls = re.findall(url_regex, text)
+    detected_urls = re.findall(url_regex, text_data)
     
     # Replace url with a url placeholder string
     for detected_url in detected_urls:
-        text = text.replace(detected_url, url_place_holder_string)
+        text_data = text_data.replace(detected_url, url_place_holder)
 
     # Extract the word tokens from the provided text
-    tokens = nltk.word_tokenize(text)
+    tokens = nltk.word_tokenize(text_data)
     
     #Lemmanitizer to remove inflectional and derivationally related forms of a word
     lemmatizer = nltk.WordNetLemmatizer()
 
     # List of clean tokens
-    clean_tokens = [lemmatizer.lemmatize(w).lower().strip() for w in tokens]
-    return clean_tokens
+    cleaned_tokens = [lemmatizer.lemmatize(w).lower().strip() for w in tokens]
+    return cleaned_tokens
 
 # Build a custom transformer which will extract the starting verb of a sentence
 class StartingVerbExtractor(BaseEstimator, TransformerMixin):
     """
     Starting Verb Extractor class
+    
+    This class extract the starting verb of a sentence,
+    creating a new feature for the ML classifier
     """
 
-    def starting_verb(self, text):
-        sentence_list = nltk.sent_tokenize(text)
-        for sentence in sentence_list:
-            pos_tags = nltk.pos_tag(tokenize(sentence))
-            first_word, first_tag = pos_tags[0]
+    def starting_verb(self, text_data):
+        sentences = nltk.sent_tokenize(text_data)
+        for sentence in sentences:
+            tags = nltk.pos_tag(tokenize(sentence))
+            first_word, first_tag = tags[0]
             if first_tag in ['VB', 'VBP'] or first_word == 'RT':
                 return True
         return False
@@ -95,12 +129,16 @@ class StartingVerbExtractor(BaseEstimator, TransformerMixin):
         return self
 
     def transform(self, X):
-        X_tagged = pd.Series(X).apply(self.starting_verb)
-        return pd.DataFrame(X_tagged)
-
+        X_tag = pd.Series(X).apply(self.starting_verb)
+        return pd.DataFrame(X_tag)
+    
 def build_pipeline():
     """
     Build Pipeline function
+    
+    Output:
+        A Scikit ML Pipeline that process text messages and apply a classifier.
+        
     """
     pipeline = Pipeline([
         ('features', FeatureUnion([
@@ -122,8 +160,24 @@ def multioutput_fscore(y_true,y_pred,beta=1):
     """
     MultiOutput Fscore
     
-    This is a custom performance metric.
+    This is a performance metric of my own creation.
     It is a sort of geometric mean of the fbeta_score, computed on each label.
+    
+    It is compatible with multi-label and multi-class problems.
+    It features some peculiarities (geometric mean, 100% removal...) to exclude
+    trivial solutions and deliberatly under-estimate a stangd fbeta_score average.
+    The aim is avoiding issues when dealing with multi-class/multi-label imbalanced cases.
+    
+    It can be used as scorer for GridSearchCV:
+        scorer = make_scorer(multioutput_fscore,beta=1)
+        
+    Arguments:
+        y_true -> List of labels
+        y_prod -> List of predictions
+        beta -> Beta value to be used to calculate fscore metric
+    
+    Output:
+        f1score -> Calculation geometric mean of fscore
     """
     
     # If provided y predictions is a dataframe then extract the values from that
@@ -151,6 +205,12 @@ def evaluate_pipeline(pipeline, X_test, Y_test, category_names):
     Evaluate Model function
     
     This function applies a ML pipeline to a test set and prints out the model performance (accuracy and f1score)
+    
+    Arguments:
+        pipeline -> A valid scikit ML Pipeline
+        X_test -> Test features
+        Y_test -> Test labels
+        category_names -> label names (multi-output)
     """
     Y_pred = pipeline.predict(X_test)
     
@@ -172,7 +232,11 @@ def save_model_as_pickle(pipeline, pickle_filepath):
     """
     Save Pipeline function
     
-    This function saves trained model as Pickle file, which is to be loaded later.
+    This function saves trained model as Pickle file, to be loaded later.
+    
+    Arguments:
+        pipeline -> GridSearchCV or Scikit Pipelin object
+        pickle_filepath -> destination path to save .pkl file
     
     """
     pickle.dump(pipeline, open(pickle_filepath, 'wb'))
