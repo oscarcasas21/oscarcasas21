@@ -14,4 +14,9 @@ to be to be queried.  We will need to:
 - Use Spark to transform the messages. 
 - Use Spark to transform the messages so that you can land them in HDFS
 
-# Methedology is in Notebook
+# Files
+
+-Final Project is in the Docker Project notebook
+-All code used is in the Docker Code notebook
+-history of linux commands is in history.txt file
+-docker compose file is also available
